@@ -1,0 +1,48 @@
+<html>
+<head>
+<meta name="description" content="CSE 3521 - Vaccuum World Problem Sample">
+<meta name="copyright" content="&copy; 2017 Joe Barker, Computer Science and Engineering, Ohio State University">
+</head>
+<title>CSE 3521 - Vaccuum World Problem Sample</title>
+
+<script type="text/javascript">require={}; module={}</script>
+<!--<script type="text/javascript" src="https://raw.githubusercontent.com/lemire/FastPriorityQueue.js/master/FastPriorityQueue.js"></script>-->
+<script type="text/javascript" src="FastPriorityQueue.js"></script>
+
+<script type="text/javascript" src="search_helper.js"></script>
+<script type="text/javascript" src="vaccuum.js"></script>
+<script type="text/javascript" src="bfs.js"></script>
+<script type="text/javascript" src="dls.js"></script>
+<script type="text/javascript" src="ids.js"></script>
+<script type="text/javascript" src="astar.js"></script>
+<script type="text/javascript" src="rnds.js"></script>
+
+<body>
+<h1 align=center>CSE 3521 - Vaccuum World Problem Sample</h1>
+<button onclick="helper_verify_state()">Verify State</button>
+<button onclick="helper_is_goal_state()">Is Goal State?</button>
+<button onclick="helper_find_successors()">Find Successors</button>
+<br>
+<button onclick="helper_run_bfs()">Run Breadth First Search</button>
+<button onclick="helper_run_ids()">Run Iterative Deepening Search</button>
+<button onclick="helper_run_astar()">Run A* Search</button>
+<br>
+<button onclick="helper_run_dls()">Run Depth-limited Search</button>
+Depth limit
+<input type="text" id="input_dls_limit" value="10">
+<br>
+<button onclick="helper_run_rnds()">Run "Random" Search</button>
+
+<br>
+<h2>Input initial state:</h2>
+<table>
+  <tr><th>Side</th><th>Dirt Amount</th><th>Robot Location</th></tr>
+  <tr><td>Left</td><td><input type="text" id="input_dirt_L" value="1"></td><td><input type="radio" id="input_robot_L" name="input_robot" checked="checked"><br></td></tr>
+  <tr><td>Right</td><td><input type="text" id="input_dirt_R" value="1"></td><td><input type="radio" id="input_robot_R" name="input_robot"></td></tr>
+</table>
+
+<hr>
+<div id="log"></div>
+
+</body>
+</html>
