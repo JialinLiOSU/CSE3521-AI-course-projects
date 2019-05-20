@@ -37,13 +37,24 @@ ID | Action
 //Returns: true if is goal state, false otherwise
 function is_goal_state(state) {
   ++helper_eval_state_count; //Keep track of how many states are evaluated (DO NOT REMOVE!)
-  
-  return /***Your code to check for goal state here!***/;
+
+  var temp=state.grid;
+  var is_goal_state=(temp[0][0]==1 && temp[0][1]==2 && temp[0][2]==3 && temp[1][0]==8 && temp[1][1]==0
+    && temp[1][2]==4 && temp[2][0]==7 && temp[2][1]==6 && temp[2][2]==5);
+
+  return is_goal_state/***Your code to check for goal state here!***/;
 }
 
 //Find the list of actions that can be performed from the given state and the new
 //states that result from each of those actions
 //Returns: Array of successor objects (where each object has a valid actionID member and corresponding resultState member)
+function create_newstate(state){
+  let newState={
+    grid : state.grid.map(x => x.slice(0)) //Deep copy of grid
+  };
+  return newState;
+}
+
 function find_successors(state) {
   ++helper_expand_state_count; //Keep track of how many states are expanded (DO NOT REMOVE!)
   
@@ -53,16 +64,51 @@ function find_successors(state) {
 
   //Hint: Javascript objects are passed by reference, so don't modify "state" directy.
   //Make copies instead:
-  //  let newState={
-  //    grid : state.grid.map(x => x.slice(0)) //Deep copy of grid
-  //  };
+  var index=0; // used to record the index of possible successors
+  for(let j=0;j<3;++j)
+    for(let i=0;i<3;++i) 
+    {
+      if (state.grid[j][i]==0)
+      {
+        k=j-1;
+        if (k>=0 && k<=2){
+          let newState=create_newstate(state);
+          newState.grid[j][i]=newState.grid[k][i];
+          newState.grid[k][i]=0;
+          successors.push({actionID : index/*ID*/,resultState : newState});
+          index=index+1;  
+        }
+        k=i-1;
+        if (k>=0 && k<=2){
+          let newState=create_newstate(state);
+          newState.grid[j][i]=newState.grid[j][k];
+          newState.grid[j][k]=0;
+          successors.push({actionID : index/*ID*/,resultState : newState});
+          index=index+1;  
+        }
+        k=j+1;
+        if (k>=0 && k<=2){
+          let newState=create_newstate(state);
+          newState.grid[j][i]=newState.grid[k][i];
+          newState.grid[k][i]=0;
+          successors.push({actionID : index/*ID*/,resultState : newState});
+          index=index+1;  
+        }
+        k=i+1;
+        if (k>=0 && k<=2){
+          let newState=create_newstate(state);
+          newState.grid[j][i]=newState.grid[j][k];
+          newState.grid[j][k]=0;
+          successors.push({actionID : index/*ID*/,resultState : newState});
+          index=index+1;  
+        }
+      }
+    }
+  
   //Remember to make a new copy for each new state you make!
 
   //Hint: Add new elements to the successor list like so:
-  //  successors.push({
-  //    actionID : /*ID*/,
-  //    resultState : newState
-  //  });
+   
 
   return successors;
 }

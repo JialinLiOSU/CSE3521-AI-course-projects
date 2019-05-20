@@ -11,7 +11,22 @@ function breadth_first_search(initial_state) {
   let closed = new Set(); //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
 
   /***Your code for breadth-first search here***/
-
+  // The difference of bfs and dfs is the way to add and extract elements in open and closed
+  open.push(initial_state);
+  while(open.length!=0){
+    state_temp=open.shift();
+    if (closed.has(state_temp)){
+      continue;
+      }
+    if (is_goal_state(state_temp)){
+      break;
+    }else{
+      successors=find_successors(state_temp);
+      open.push(successors);//maybe cannot push in this way
+      closed.add(state_temp);
+    }
+  
+  }
   /*
     Hint: In order to generate the solution path, you will need to augment
       the states to store the predecessor/parent state they were generated from
