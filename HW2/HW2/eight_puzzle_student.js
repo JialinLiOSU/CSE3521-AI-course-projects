@@ -68,7 +68,7 @@ function find_successors(state) {
   for(let j=0;j<3;++j)
     for(let i=0;i<3;++i) 
     {
-      var index=0; // used to record the index of possible successors
+      
       if (state.grid[j][i]==0)
       {
         k=j-1;
@@ -76,32 +76,28 @@ function find_successors(state) {
           let newState=create_newstate(state);
           newState.grid[j][i]=newState.grid[k][i];
           newState.grid[k][i]=0;
-          successors.push({actionID : index/*ID*/,resultState : newState});
-          index=index+1;  
+          successors.push({actionID : 1/*ID*/,resultState : newState});
         }
         k=i-1;
         if (k>=0 && k<=2){
           let newState=create_newstate(state);
           newState.grid[j][i]=newState.grid[j][k];
           newState.grid[j][k]=0;
-          successors.push({actionID : index/*ID*/,resultState : newState});
-          index=index+1;  
+          successors.push({actionID : 3/*ID*/,resultState : newState});
         }
         k=j+1;
         if (k>=0 && k<=2){
           let newState=create_newstate(state);
           newState.grid[j][i]=newState.grid[k][i];
           newState.grid[k][i]=0;
-          successors.push({actionID : index/*ID*/,resultState : newState});
-          index=index+1;  
+          successors.push({actionID : 2/*ID*/,resultState : newState});
         }
         k=i+1;
         if (k>=0 && k<=2){
           let newState=create_newstate(state);
           newState.grid[j][i]=newState.grid[j][k];
           newState.grid[j][k]=0;
-          successors.push({actionID : index/*ID*/,resultState : newState});
-          index=index+1;  
+          successors.push({actionID : 4/*ID*/,resultState : newState});
         }
       }
     }

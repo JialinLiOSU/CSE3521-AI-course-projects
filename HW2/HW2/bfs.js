@@ -17,28 +17,32 @@ function breadth_first_search(initial_state) {
   var action_arr=[];
   /***Your code for breadth-first search here***/
   // The difference of bfs and dfs is the way to add and extract elements in open and closed
-  open.push(initial_state);
+  augmented_init_state={
+    state:initial_state,
+    predecessor:null, 
+    action:null
+  };
+  open.push(augmented_init_state);
   while(open.length!=0){
-    state_temp=open.shift();
-    if (closed.has(state_temp)){
+    aug_state_temp=open.shift();
+    if (closed.has(state_to_uniqueid(aug_state_temp))){
       continue;
       }
-    if (!is_goal_state(state_temp)){
-      successors=find_successors(state_temp);
+    if (!is_goal_state(aug_state_temp.state)){
+      successors=find_successors(aug_state_temp.state);
       for (var i=0;i<successors.length;i++){
         suc=successors[i];
-        open.push(suc.resultState);
         augmented_state={
           state:suc.resultState,
-          predecessor:state_temp, //need a function to get the predecessor
-          action:suc.actionID
-        };
-        augmented_state_list.push(augmented_state);
+          predecessor:aug_state_temp, //need a function to get the predecessor
+          action:suc.actionID};
+        open.push(augmented_state);
+        // augmented_state_list.push(augmented_state);
       }
-      closed.add(state_temp);
+      closed.add(state_to_uniqueid(aug_state_temp));// all of the passed states are in closed set
     }else{
-      state_arr.unshift(state_temp);
-      augmented_state_temp=find_state(augmented_state_list,state_temp);
+      state_arr.unshift(aug_state_temp.state);
+      augmented_state_temp=find_pre_state(closed,aug_state_temp);
       while (augmented_state_temp!=null){
         state_temp=augmented_state_temp.predecessor;
         state_arr.unshift(state_temp);
@@ -81,11 +85,13 @@ function breadth_first_search(initial_state) {
   console.log("No solution found!")
   return null;
 }
-function find_state(augmented_state_list,state_temp){
+function find_state(closed_set,aug_state_temp){
+  if (closed_set.has(aug_state_temp.predecessor)){
+    return null;
+  }
   for (var i=augmented_state_list.len;i<augmented_state_list.length;i++){
     if (augmented_state_list[i].state=state_temp){
       return augmented_state_list[i];
     }
   }
-  return null;
 }
