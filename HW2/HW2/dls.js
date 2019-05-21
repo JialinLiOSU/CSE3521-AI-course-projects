@@ -18,42 +18,48 @@ function depth_limited_search(initial_state,depth_limit) {
   var augmented_state;
   var state_arr=[];
   var action_arr=[];
-  var depth=0;
   /***Your code for breadth-first search here***/
   // The difference of bfs and dfs is the way to add and extract elements in open and closed
-  open.push(initial_state);
-  while(open.length!=0){
-    state_temp=open.pop();
-    if (closed.has(state_temp)){
+  aug_state_temp={
+    state:initial_state,
+    predecessor:null, 
+    action:null,
+    depth:0
+  };
+  open.push(aug_state_temp);
+  while(open.length!=0 ){
+    aug_state_temp=open.pop(); // pop up the last element in open
+    if (aug_state_temp.depth>depth_limit){
       continue;
-      }
-    if (!is_goal_state(state_temp)){
-      successors=find_successors(state_temp);
-      depth=depth+1;//maybe not correct
+    }
+    // if (closed.has(aug_state_temp)){
+    //   continue;
+    //   }
+    if (!is_goal_state(aug_state_temp.state)){
+      successors=find_successors(aug_state_temp.state);
       for (var i=0;i<successors.length;i++){
         suc=successors[i];
-        open.push(suc.resultState);
         augmented_state={
           state:suc.resultState,
-          predecessor:state_temp, 
+          predecessor:aug_state_temp, //need a function to get the predecessor
           action:suc.actionID,
-          depth:depth
-        };
-        augmented_state_list.push(augmented_state);
+          depth:aug_state_temp.depth+1};
+          
+        open.push(augmented_state);
+        // augmented_state_list.push(augmented_state);
       }
-      closed.add(state_temp);
+      closed.add(aug_state_temp);// all of the passed states are in closed set
     }else{
-      state_arr.unshift(state_temp);
-      augmented_state_temp=find_state(augmented_state_list,state_temp);
+      state_arr.unshift(aug_state_temp.state);
+      augmented_state_temp=aug_state_temp.predecessor;
       while (augmented_state_temp!=null){
-        state_temp=augmented_state_temp.predecessor;
-        state_arr.unshift(state_temp);
+        state_arr.unshift(augmented_state_temp.state);
         action_temp=augmented_state_temp.action;
         action_arr.unshift(action_temp);
-        augmented_state_temp=find_state(augmented_state_list,state_temp);
+        augmented_state_temp=augmented_state_temp.predecessor;
       }
-      action_arr.shift();
       state_arr.shift();
+      action_arr.shift();
       return {
         actions : action_arr/*array of action ids*/,
         states : state_arr/*array of states*/
@@ -64,6 +70,7 @@ function depth_limited_search(initial_state,depth_limit) {
 
   console.log("No solution found!")
   return null;
+
   /***DO NOT do repeated state or loop checking!***/
   
   /*

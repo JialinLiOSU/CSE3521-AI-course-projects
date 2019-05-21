@@ -86,13 +86,3 @@ function breadth_first_search(initial_state) {
   console.log("No solution found!")
   return null;
 }
-function find_state(closed_set,aug_state_temp){
-  if (closed_set.has(aug_state_temp.predecessor)){
-    return null;
-  }
-  for (var i=augmented_state_list.len;i<augmented_state_list.length;i++){
-    if (augmented_state_list[i].state=state_temp){
-      return augmented_state_list[i];
-    }
-  }
-}
