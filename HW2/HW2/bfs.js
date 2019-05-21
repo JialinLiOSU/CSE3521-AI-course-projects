@@ -25,7 +25,7 @@ function breadth_first_search(initial_state) {
   open.push(augmented_init_state);
   while(open.length!=0){
     aug_state_temp=open.shift();
-    if (closed.has(state_to_uniqueid(aug_state_temp))){
+    if (closed.has(aug_state_temp)){
       continue;
       }
     if (!is_goal_state(aug_state_temp.state)){
@@ -39,17 +39,18 @@ function breadth_first_search(initial_state) {
         open.push(augmented_state);
         // augmented_state_list.push(augmented_state);
       }
-      closed.add(state_to_uniqueid(aug_state_temp));// all of the passed states are in closed set
+      closed.add(aug_state_temp);// all of the passed states are in closed set
     }else{
       state_arr.unshift(aug_state_temp.state);
-      augmented_state_temp=find_pre_state(closed,aug_state_temp);
+      augmented_state_temp=aug_state_temp.predecessor;
       while (augmented_state_temp!=null){
-        state_temp=augmented_state_temp.predecessor;
-        state_arr.unshift(state_temp);
+        state_arr.unshift(augmented_state_temp.state);
         action_temp=augmented_state_temp.action;
         action_arr.unshift(action_temp);
-        augmented_state_temp=find_state(augmented_state_list,state_temp);
+        augmented_state_temp=augmented_state_temp.predecessor;
       }
+      state_arr.shift();
+      action_arr.shift();
       return {
         actions : action_arr/*array of action ids*/,
         states : state_arr/*array of states*/
