@@ -127,7 +127,26 @@ function calculate_heuristic(state) {
     }
 
   let h=0;
-  for(let i=0;i<9;++i) {
+  for(let i=1;i<9;++i) {
+    h+=Math.abs( st_pos[i][0]-g_pos[i][0] )+Math.abs( st_pos[i][1]-g_pos[i][1] );
+  }
+  return h;
+}
+
+function calculate_g(state) {
+  //Total Manhattan distance heuristic
+  let goal=[ [1, 2, 3], [4, 5, 6], [0, 8, 7] ];
+
+  let g_pos=Array(9);
+  let st_pos=Array(9);
+  for(let j=0;j<3;++j)
+    for(let i=0;i<3;++i) {
+        g_pos[ goal[j][i] ]=[j,i];
+        st_pos[ state.grid[j][i] ]=[j,i];
+    }
+
+  let h=0;
+  for(let i=1;i<9;++i) {
     h+=Math.abs( st_pos[i][0]-g_pos[i][0] )+Math.abs( st_pos[i][1]-g_pos[i][1] );
   }
   return h;
