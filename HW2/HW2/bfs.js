@@ -10,6 +10,11 @@ function breadth_first_search(initial_state) {
                  //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
   let closed = new Set(); //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
 
+  var state_temp,action_temp;
+  let augmented_state_list=[];
+  var augmented_state;
+  var state_arr=[];
+  var action_arr=[];
   /***Your code for breadth-first search here***/
   // The difference of bfs and dfs is the way to add and extract elements in open and closed
   open.push(initial_state);
@@ -18,15 +23,37 @@ function breadth_first_search(initial_state) {
     if (closed.has(state_temp)){
       continue;
       }
-    if (is_goal_state(state_temp)){
-      break;
-    }else{
+    if (!is_goal_state(state_temp)){
       successors=find_successors(state_temp);
-      open.push(successors);//maybe cannot push in this way
+      for (var i=0;i<successors.length;i++){
+        suc=successors[i];
+        open.push(suc.resultState);
+        augmented_state={
+          state:suc.resultState,
+          predecessor:state_temp, //need a function to get the predecessor
+          action:suc.actionID
+        };
+        augmented_state_list.push(augmented_state);
+      }
       closed.add(state_temp);
+    }else{
+      state_arr.unshift(state_temp);
+      augmented_state_temp=find_state(augmented_state_list,state_temp);
+      while (augmented_state_temp!=null){
+        state_temp=augmented_state_temp.predecessor;
+        state_arr.unshift(state_temp);
+        action_temp=augmented_state_temp.action;
+        action_arr.unshift(action_temp);
+        augmented_state_temp=find_state(augmented_state_list,state_temp);
+      }
+      return {
+        actions : action_arr/*array of action ids*/,
+        states : state_arr/*array of states*/
+      };
     }
   
   }
+
   /*
     Hint: In order to generate the solution path, you will need to augment
       the states to store the predecessor/parent state they were generated from
@@ -49,14 +76,16 @@ function breadth_first_search(initial_state) {
   */
   
   /***Your code to generate solution path here***/
-  
-  return {
-    actions : /*array of action ids*/,
-    states : /*array of states*/
-  };
-  
   //OR
-
   //No solution found
+  console.log("No solution found!")
+  return null;
+}
+function find_state(augmented_state_list,state_temp){
+  for (var i=augmented_state_list.len;i<augmented_state_list.length;i++){
+    if (augmented_state_list[i].state=state_temp){
+      return augmented_state_list[i];
+    }
+  }
   return null;
 }

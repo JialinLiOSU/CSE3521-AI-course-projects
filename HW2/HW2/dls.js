@@ -9,7 +9,61 @@
 function depth_limited_search(initial_state,depth_limit) {
 
   /***Your code for depth-limited search here!***/
+  let open = []; //See push()/pop() and unshift()/shift() to operate like stack or queue
+                 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+  let closed = new Set(); //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
+
+  var state_temp,action_temp;
+  let augmented_state_list=[];
+  var augmented_state;
+  var state_arr=[];
+  var action_arr=[];
+  var depth=0;
+  /***Your code for breadth-first search here***/
+  // The difference of bfs and dfs is the way to add and extract elements in open and closed
+  open.push(initial_state);
+  while(open.length!=0){
+    state_temp=open.pop();
+    if (closed.has(state_temp)){
+      continue;
+      }
+    if (!is_goal_state(state_temp)){
+      successors=find_successors(state_temp);
+      depth=depth+1;//maybe not correct
+      for (var i=0;i<successors.length;i++){
+        suc=successors[i];
+        open.push(suc.resultState);
+        augmented_state={
+          state:suc.resultState,
+          predecessor:state_temp, 
+          action:suc.actionID,
+          depth:depth
+        };
+        augmented_state_list.push(augmented_state);
+      }
+      closed.add(state_temp);
+    }else{
+      state_arr.unshift(state_temp);
+      augmented_state_temp=find_state(augmented_state_list,state_temp);
+      while (augmented_state_temp!=null){
+        state_temp=augmented_state_temp.predecessor;
+        state_arr.unshift(state_temp);
+        action_temp=augmented_state_temp.action;
+        action_arr.unshift(action_temp);
+        augmented_state_temp=find_state(augmented_state_list,state_temp);
+      }
+      action_arr.shift();
+      state_arr.shift();
+      return {
+        actions : action_arr/*array of action ids*/,
+        states : state_arr/*array of states*/
+      };
+    }
   
+  }
+
+  console.log("No solution found!")
+  return null;
   /***DO NOT do repeated state or loop checking!***/
   
   /*

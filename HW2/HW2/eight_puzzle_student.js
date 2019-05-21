@@ -64,10 +64,11 @@ function find_successors(state) {
 
   //Hint: Javascript objects are passed by reference, so don't modify "state" directy.
   //Make copies instead:
-  var index=0; // used to record the index of possible successors
+  
   for(let j=0;j<3;++j)
     for(let i=0;i<3;++i) 
     {
+      var index=0; // used to record the index of possible successors
       if (state.grid[j][i]==0)
       {
         k=j-1;
