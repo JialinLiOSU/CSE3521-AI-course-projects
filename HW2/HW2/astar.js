@@ -18,7 +18,7 @@ function astar_search(initial_state) {
   var action_arr=[];
   /***Your code for breadth-first search here***/
   // The difference of bfs and dfs is the way to add and extract elements in open and closed
-  est_total_cost=calculate_heuristic(initial_state)+calculate_g(initial_state);
+  est_total_cost=calculate_heuristic(initial_state)+calculate_g(initial_state,initial_state);
   augmented_init_state={
     state:initial_state,
     predecessor:null, 
@@ -35,7 +35,7 @@ function astar_search(initial_state) {
       successors=find_successors(aug_state_temp.state);
       for (var i=0;i<successors.length;i++){
         suc=successors[i];
-        est_cost_temp=calculate_heuristic(suc.resultState)+calculate_g(suc.resultState);
+        est_cost_temp=calculate_heuristic(suc.resultState)+calculate_g(suc.resultState,initial_state);
         augmented_state={
           state:suc.resultState,
           predecessor:aug_state_temp, //need a function to get the predecessor

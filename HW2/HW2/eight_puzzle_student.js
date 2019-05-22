@@ -133,10 +133,11 @@ function calculate_heuristic(state) {
   return h;
 }
 
-function calculate_g(state) {
+function calculate_g(state,initial_state) {
   //Total Manhattan distance heuristic
+  let init_state=[initial_state.grid[0],initial_state.grid[1],initial_state.grid[2],]
   let goal=[ [1, 2, 3], [4, 5, 6], [0, 8, 7] ];
-
+  goal=init_state;
   let g_pos=Array(9);
   let st_pos=Array(9);
   for(let j=0;j<3;++j)
