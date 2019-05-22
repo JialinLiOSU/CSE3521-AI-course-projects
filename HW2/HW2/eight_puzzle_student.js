@@ -127,7 +127,7 @@ function calculate_heuristic(state) {
     }
 
   let h=0;
-  for(let i=1;i<9;++i) {
+  for(let i=0;i<9;++i) {
     h+=Math.abs( st_pos[i][0]-g_pos[i][0] )+Math.abs( st_pos[i][1]-g_pos[i][1] );
   }
   return h;
