@@ -118,9 +118,7 @@ function helper_run_dls() {
 
 function helper_run_ids() {
   if(typeof iterative_deepening_search !== 'function') helper_bad_function("iterative_deepening_search");
-  let limit_input=document.getElementById("input_dls_limit");
-  let limit=parseInt(limit_input.value,10);
-  helper_run(function(s){ return iterative_deepening_search(s,limit); });
+  helper_run(iterative_deepening_search);
 }
 
 function helper_run_astar() {
