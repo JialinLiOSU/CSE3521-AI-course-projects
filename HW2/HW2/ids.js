@@ -19,8 +19,8 @@ function iterative_deepening_search(initial_state) {
   var action_arr=[];
   
   for (var depth_limit=1;depth_limit<depth_limit_upperbound;depth_limit++){
-    let open = []; 
-    let closed = new Set();
+    open = []; 
+    closed = new Set();
     aug_state_temp={
       state:initial_state,
       predecessor:null, 

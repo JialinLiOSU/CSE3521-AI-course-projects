@@ -1,0 +1,101 @@
+<html>
+<head>
+<meta name="description" content="CSE 3521 - Tic Tac Toe">
+<meta name="copyright" content="&copy; 2019 Joe Barker, Computer Science and Engineering, Ohio State University">
+</head>
+<title>CSE 3521 - Tic Tac Toe</title>
+
+<script type="text/javascript" src="tictactoe_helper.js"></script>
+<script type="text/javascript" src="tictactoe.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/bestiejs/platform.js/platform.js"></script>
+
+<body onload="helper_check_student_source();">
+<h1 align=center>CSE 3521 - Tic Tac Toe</h1>
+
+<!-- Only one of the 3 following divs is shown at a time, depending on the state of the game -->
+<div id="ui_startgame">
+<h2>Set initial board:</h2>
+<table style="border-collapse: collapse">
+  <tr>
+    <td style="border-bottom:2px solid"><button style="width:40px;height:20px" onclick="helper_initboard_click(0)" id="input_initboard_pos0"></button></td>
+    <td style="border-left:2px solid;border-bottom:2px solid"><button style="width:40px;height:20px" onclick="helper_initboard_click(1)" id="input_initboard_pos1"></button></td>
+    <td style="border-left:2px solid;border-bottom:2px solid"><button style="width:40px;height:20px" onclick="helper_initboard_click(2)" id="input_initboard_pos2"></button></td>
+  </tr>
+  <tr>
+    <td style="border-bottom:2px solid"><button style="width:40px;height:20px" onclick="helper_initboard_click(3)" id="input_initboard_pos3"></button></td>
+    <td style="border-left:2px solid;border-bottom:2px solid"><button style="width:40px;height:20px" onclick="helper_initboard_click(4)" id="input_initboard_pos4"></button></td>
+    <td style="border-left:2px solid;border-bottom:2px solid"><button style="width:40px;height:20px" onclick="helper_initboard_click(5)" id="input_initboard_pos5"></button></td>
+  </tr>
+  <tr>
+    <td style=""><button style="width:40px;height:20px" onclick="helper_initboard_click(6)" id="input_initboard_pos6"></button></td>
+    <td style="border-left:2px solid"><button style="width:40px;height:20px" onclick="helper_initboard_click(7)" id="input_initboard_pos7"></button></td>
+    <td style="border-left:2px solid"><button style="width:40px;height:20px" onclick="helper_initboard_click(8)" id="input_initboard_pos8"></button></td>
+  </tr>
+</table>
+<br>
+Human player is:
+<input type="radio" id="input_order_X" name="input_order" checked="checked">First (X)
+<input type="radio" id="input_order_O" name="input_order">Second (O)
+<br>
+CPU mode is:
+<input type="radio" id="input_cpumode_mm" name="input_cpumode" checked="checked">MiniMax
+<input type="radio" id="input_cpumode_mmab" name="input_cpumode">MiniMax w/ Alpha-Beta Pruning
+<br>
+<button onclick="game_start()">Start Game</button>
+<button onclick="do_debug()">Run debug function</button>
+</div>
+
+<div id="ui_humanturn" style="display:none">
+<h2>Player turn:</h2>
+<table style="border-collapse: collapse">
+  <tr>
+    <td style="border-bottom:2px solid;width:40px;height:20px;text-align:center"><button style="width:40px;height:20px" onclick="game_playermove(0)" id="input_playermove_pos0"></button><span id="disp_board_pos0"></span></td>
+    <td style="border-left:2px solid;border-bottom:2px solid;width:40px;height:20px;text-align:center"><button style="width:40px;height:20px" onclick="game_playermove(1)" id="input_playermove_pos1"></button><span id="disp_board_pos1"></span></td>
+    <td style="border-left:2px solid;border-bottom:2px solid;width:40px;height:20px;text-align:center"><button style="width:40px;height:20px" onclick="game_playermove(2)" id="input_playermove_pos2"></button><span id="disp_board_pos2"></span></td>
+  </tr>
+  <tr>
+    <td style="border-bottom:2px solid;width:40px;height:20px;text-align:center"><button style="width:40px;height:20px" onclick="game_playermove(3)" id="input_playermove_pos3"></button><span id="disp_board_pos3"></span></td>
+    <td style="border-left:2px solid;border-bottom:2px solid;width:40px;height:20px;text-align:center"><button style="width:40px;height:20px" onclick="game_playermove(4)" id="input_playermove_pos4"></button><span id="disp_board_pos4"></span></td>
+    <td style="border-left:2px solid;border-bottom:2px solid;width:40px;height:20px;text-align:center"><button style="width:40px;height:20px" onclick="game_playermove(5)" id="input_playermove_pos5"></button><span id="disp_board_pos5"></span></td>
+  </tr>
+  <tr>
+    <td style="width:40px;height:20px;text-align:center"><button style="width:40px;height:20px" onclick="game_playermove(6)" id="input_playermove_pos6"></button><span id="disp_board_pos6"></span></td>
+    <td style="border-left:2px solid;width:40px;height:20px;text-align:center"><button style="width:40px;height:20px" onclick="game_playermove(7)" id="input_playermove_pos7"></button><span id="disp_board_pos7"></span></td>
+    <td style="border-left:2px solid;width:40px;height:20px;text-align:center"><button style="width:40px;height:20px" onclick="game_playermove(8)" id="input_playermove_pos8"></button><span id="disp_board_pos8"></span></td>
+  </tr>
+</table>
+</div>
+
+<div id="ui_cputurn" style="display:none">
+<h2>CPU turn:</h2>
+Calculating move...
+</div>
+
+<!-- Template for showing boards, not shown directly. A copy is taken, altered, and inserted into the document -->
+<div id="ui_boarddisplay" style="display:none">
+<table style="border-collapse: collapse">
+  <tr>
+    <td style="border-bottom:2px solid;width:40px;height:20px;text-align:center" id="boarddisplay_pos0"></td>
+    <td style="border-left:2px solid;border-bottom:2px solid;width:40px;height:20px;text-align:center" id="boarddisplay_pos1"></td>
+    <td style="border-left:2px solid;border-bottom:2px solid;width:40px;height:20px;text-align:center" id="boarddisplay_pos2"></td>
+  </tr>
+  <tr>
+    <td style="border-bottom:2px solid;width:40px;height:20px;text-align:center" id="boarddisplay_pos3"></td>
+    <td style="border-left:2px solid;border-bottom:2px solid;width:40px;height:20px;text-align:center" id="boarddisplay_pos4"></td>
+    <td style="border-left:2px solid;border-bottom:2px solid;width:40px;height:20px;text-align:center" id="boarddisplay_pos5"></td>
+  </tr>
+  <tr>
+    <td style="width:40px;height:20px;text-align:center" id="boarddisplay_pos6"></td>
+    <td style="border-left:2px solid;width:40px;height:20px;text-align:center" id="boarddisplay_pos7"></td>
+    <td style="border-left:2px solid;width:40px;height:20px;text-align:center" id="boarddisplay_pos8"></td>
+  </tr>
+</table>
+</div>
+
+<!-- Logging area for outputting status and debug information -->
+<hr>
+<div id="log"></div>
+
+</body>
+</html>
