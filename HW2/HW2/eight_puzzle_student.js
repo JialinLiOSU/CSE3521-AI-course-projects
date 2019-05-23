@@ -133,45 +133,25 @@ function calculate_heuristic(state) {
   return h;
 }
 
-function calculate_g(state,initial_state) {
-  //Total Manhattan distance heuristic
-  let init_state=[initial_state.grid[0],initial_state.grid[1],initial_state.grid[2],]
-  let goal=[ [1, 2, 3], [4, 5, 6], [0, 8, 7] ];
-  goal=init_state;
-  let g_pos=Array(9);
-  let st_pos=Array(9);
-  for(let j=0;j<3;++j)
-    for(let i=0;i<3;++i) {
-        g_pos[ goal[j][i] ]=[j,i];
-        st_pos[ state.grid[j][i] ]=[j,i];
-    }
 
-  let h=0;
-  for(let i=1;i<9;++i) {
-    h+=Math.abs( st_pos[i][0]-g_pos[i][0] )+Math.abs( st_pos[i][1]-g_pos[i][1] );
-  }
-  return h;
-}
+// function calculate_heuristic(state) {
+//   //Misplaced tiles heuristic
+//   let goal=[ [1, 2, 3], [8, 0, 4], [7, 6, 5] ];
 
-/*
-function calculate_heuristic(state) {
-  //Misplaced tiles heuristic
-  let goal=[ [1, 2, 3], [8, 0, 4], [7, 6, 5] ];
+//   let h=0;
+//   for(let j=0;j<3;++j)
+//     for(let i=0;i<3;++i) {
+//       if(state.grid[j][i]!=goal[j][i])
+//         ++h;
+//     }
+//   if(h>0) --h; //Account for miscounted blank
+//   return h;
+// }
 
-  let h=0;
-  for(let j=0;j<3;++j)
-    for(let i=0;i<3;++i) {
-      if(state.grid[j][i]!=goal[j][i])
-        ++h;
-    }
-  if(h>0) --h; //Account for miscounted blank
-  return h;
-}
-*/
 
-/*
-function calculate_heuristic(state) {
-  //Simplest heuristic (h(n)=0)
-  return 0;
-}
-*/
+
+// function calculate_heuristic(state) {
+//   //Simplest heuristic (h(n)=0)
+//   return 0;
+// }
+
