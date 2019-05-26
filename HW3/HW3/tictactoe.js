@@ -80,7 +80,7 @@ function is_terminal(board) {
   return false;
 }
 
-function utility(board,player) {
+function utility(board,player) {//should consider the player,separate from Max and Min
   /***********************
   * TASK: Implement the utility function
   *
@@ -109,7 +109,7 @@ function tictactoe_minimax_alphabeta(board,cpu_player,cur_player,alpha,beta) {
   * Once you are confident in your minimax implementation, copy it here
   * and add alpha-beta pruning. (What do you do with the new alpha and beta parameters/variables?)
   *
-  * Hint: Make sure you update the recursive function call to call this function!
+  * Hint: Make sure you update the recursive function call to call this function! Should change the recursive function
   ***********************/
 }
 
