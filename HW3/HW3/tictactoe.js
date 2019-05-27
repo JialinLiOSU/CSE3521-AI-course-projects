@@ -39,19 +39,50 @@ function tictactoe_minimax(board, cpu_player, cur_player) {
     }
 
   ++helper_expand_state_count; //DO NOT REMOVE
-  //GENERATE SUCCESSORS
-  for (let move of move_expand_order) { //For each possible move (i.e., action)
-    if (board[move] != -1) continue; //Already taken, can't move here (i.e., successor not valid)
 
-    let new_board = board.slice(0); //Copy
-    new_board[move] = cur_player; //Apply move
-    //Successor state: new_board
+  var best_score, move_temp; // The highest score now
 
-    //RECURSION
-    // What will my opponent do if I make this move?
-    let results = tictactoe_minimax(new_board, cpu_player, 1 - cur_player);
-    
-    
+  if (cur_player != cpu_player) {
+    best_score = Infinity;
+    //GENERATE SUCCESSORS
+    for (let move of move_expand_order) { //For each possible move (i.e., action)
+      if (board[move] != -1) continue; //Already taken, can't move here (i.e., successor not valid)
+
+      let new_board = board.slice(0); //Copy
+      new_board[move] = cur_player; //Apply move
+      //Successor state: new_board
+
+      //RECURSION
+      // What will my opponent do if I make this move?
+      let results = tictactoe_minimax(new_board, cpu_player, 1 - cur_player);
+
+      if (results.score < best_score) {
+        best_score = results.score;
+        move_temp = move;
+      }
+
+    }
+  } else {
+    best_score = -Infinity;
+    //GENERATE SUCCESSORS
+    for (let move of move_expand_order) { //For each possible move (i.e., action)
+      if (board[move] != -1) continue; //Already taken, can't move here (i.e., successor not valid)
+
+      let new_board = board.slice(0); //Copy
+      new_board[move] = cur_player; //Apply move
+      //Successor state: new_board
+
+      //RECURSION
+      // What will my opponent do if I make this move?
+      let results = tictactoe_minimax(new_board, cpu_player, 1 - cur_player);
+
+      if (results.score > best_score) {
+        best_score = results.score;
+        move_temp = move;
+      }
+    }
+
+
     //MINIMAX
     /***********************
     * TASK: Implement minimax here. (What do you do with results.move and results.score ?)
@@ -65,8 +96,8 @@ function tictactoe_minimax(board, cpu_player, cur_player) {
   //Return results gathered from all sucessors (moves).
   //Which was the "best" move?  
   return {
-    // move: /* What do you return here? */,
-    // score: /* And here? */
+    move: move_temp/* What do you return here? */,
+    score: best_score/* And here? */
   };
 }
 
@@ -79,15 +110,15 @@ function is_terminal(board) {
   * Return false if the game is incomplete
   *************************/
   //check the two conditions of same value in diagonals
-  var check_same_diag1 = (board[0] == board[4] == board[8]);
-  var check_same_diag2 = (board[2] == board[4] == board[6]);
+  var check_same_diag1 = (board[0] == board[4] && board[4] == board[8] && board[4] != -1);
+  var check_same_diag2 = (board[2] == board[4] && board[4] == board[6] && board[4] != -1);
   if (!board.includes(-1) || check_same_diag1 || check_same_diag2) {
     return true;
   }
   for (var i = 0; i < 3; i++) {
     //check the values in the same row and the same column
-    check_same_row = (board[3 * i + 0] == board[3 * i + 1] == board[3 * i + 2]);
-    check_same_col = (board[3 * 0 + i] == board[3 * 1 + i] == board[3 * 2 + i]);
+    check_same_row = (board[3 * i + 0] == board[3 * i + 1] && board[3 * i + 1] == board[3 * i + 2] && board[3 * i + 0] != -1);
+    check_same_col = (board[3 * 0 + i] == board[3 * 1 + i] && board[3 * 1 + i] == board[3 * 2 + i] && board[3 * 0 + i] != -1);
 
     if (check_same_col || check_same_row) {
       return true;
@@ -104,8 +135,8 @@ function utility(board, player) {//should consider the player,separate from Max 
   var tie = true;
   var winner = -1; //winner can only be 0 or 1, if winner ==-1, there is a draw
   //check the two conditions of same value in diagonals
-  var check_same_diag1 = (board[0] == board[4] && board[4] == board[8]);
-  var check_same_diag2 = (board[2] == board[4] && board[4] === board[6]);
+  var check_same_diag1 = (board[0] == board[4] && board[4] == board[8] && board[4] != -1);
+  var check_same_diag2 = (board[2] == board[4] && board[4] === board[6] && board[4] != -1);
   if (check_same_diag1 || check_same_diag2) {
     tie = false;
     if (board[4] == 0) {
@@ -117,23 +148,23 @@ function utility(board, player) {//should consider the player,separate from Max 
   } else {
     for (var i = 0; i < 3; i++) {
       //check the values in the same row and the same column
-      check_same_row = (board[3 * i + 0] == board[3 * i + 1] && board[3 * i + 1] == board[3 * i + 2]);
-      check_same_col = (board[3 * 0 + i] == board[3 * 1 + i] && board[3 * 1 + i] == board[3 * 2 + i]);
+      check_same_row = (board[3 * i + 0] == board[3 * i + 1] && board[3 * i + 1] == board[3 * i + 2] && board[3 * i + 0] != -1);
+      check_same_col = (board[3 * 0 + i] == board[3 * 1 + i] && board[3 * 1 + i] == board[3 * 2 + i] && board[3 * 0 + i] != -1);
 
       if (check_same_row) {
         tie = false;
-        if (board[3 * i + 0] == 0)  {
+        if (board[3 * i + 0] == 0) {
           winner = 0;
-        } else if (board[3 * i + 0] == 1 ) {
+        } else if (board[3 * i + 0] == 1) {
           winner = 1;
         }
         break;
       }
       if (check_same_col) {
         tie = false;
-        if ( board[3 * 0 + i] == 0) {
+        if (board[3 * 0 + i] == 0) {
           winner = 0;
-        } else if ( board[3 * 0 + i] == 1) {
+        } else if (board[3 * 0 + i] == 1) {
           winner = 1;
         }
         break;
@@ -177,31 +208,80 @@ function utility(board, player) {//should consider the player,separate from Max 
 }
 
 function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta) {
-  /***********************
-  * TASK: Implement Alpha-Beta Pruning
-  *
-  * Once you are confident in your minimax implementation, copy it here
-  * and add alpha-beta pruning. (What do you do with the new alpha and beta parameters/variables?)
-  *
-  * Hint: Make sure you update the recursive function call to call this function! Should change the recursive function
-  ***********************/
-}
+  if (is_terminal(board)) //Stop if game is over
+    return {
+      move: null,
+      score: utility(board, cpu_player) //How good was this result for us?
+    }
 
-function debug(board, human_player) {
-  /***********************
-  * This function is run whenever you click the "Run debug function" button.
-  *
-  * You may use this function to run any code you need for debugging.
-  * The current "initial board" and "human player" settings are passed as arguments.
-  *
-  * (For the purposes of grading, this function will be ignored.)
-  ***********************/
-  helper_log_write("Testing board:");
-  helper_log_board(board);
+  ++helper_expand_state_count; //DO NOT REMOVE
 
-  let tm = is_terminal(board);
-  helper_log_write("is_terminal() returns " + (tm ? "true" : "false"));
+  var best_score, move_temp; // The highest score now
 
-  let u = utility(board, human_player);
-  helper_log_write("utility() returns " + u + " (w.r.t. human player selection)");
-}
+  if (cur_player != cpu_player) {
+    best_score = Infinity;
+    //GENERATE SUCCESSORS
+    for (let move of move_expand_order) { //For each possible move (i.e., action)
+      if (board[move] != -1) continue; //Already taken, can't move here (i.e., successor not valid)
+
+      let new_board = board.slice(0); //Copy
+      new_board[move] = cur_player; //Apply move
+      //Successor state: new_board
+
+      //RECURSION
+      // What will my opponent do if I make this move?
+      let results = tictactoe_minimax_alphabeta(new_board, cpu_player, 1 - cur_player);
+
+      if (results.score < best_score) {
+        best_score = results.score;
+        move_temp = move;
+      }
+
+    }
+  } else {
+    best_score = -Infinity;
+    //GENERATE SUCCESSORS
+    for (let move of move_expand_order) { //For each possible move (i.e., action)
+      if (board[move] != -1) continue; //Already taken, can't move here (i.e., successor not valid)
+
+      let new_board = board.slice(0); //Copy
+      new_board[move] = cur_player; //Apply move
+      //Successor state: new_board
+
+      //RECURSION
+      // What will my opponent do if I make this move?
+      let results = tictactoe_minimax(new_board, cpu_player, 1 - cur_player);
+
+      if (results.score > best_score) {
+        best_score = results.score;
+        move_temp = move;
+      }
+    }
+    /***********************
+    * TASK: Implement Alpha-Beta Pruning
+    *
+    * Once you are confident in your minimax implementation, copy it here
+    * and add alpha-beta pruning. (What do you do with the new alpha and beta parameters/variables?)
+    *
+    * Hint: Make sure you update the recursive function call to call this function! Should change the recursive function
+    ***********************/
+  }
+
+  function debug(board, human_player) {
+    /***********************
+    * This function is run whenever you click the "Run debug function" button.
+    *
+    * You may use this function to run any code you need for debugging.
+    * The current "initial board" and "human player" settings are passed as arguments.
+    *
+    * (For the purposes of grading, this function will be ignored.)
+    ***********************/
+    helper_log_write("Testing board:");
+    helper_log_board(board);
+
+    let tm = is_terminal(board);
+    helper_log_write("is_terminal() returns " + (tm ? "true" : "false"));
+
+    let u = utility(board, human_player);
+    helper_log_write("utility() returns " + u + " (w.r.t. human player selection)");
+  }
