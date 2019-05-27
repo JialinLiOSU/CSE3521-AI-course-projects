@@ -1,11 +1,11 @@
 //Define the order in which to examine/expand possible moves
 //(This affects alpha-beta pruning performance)
-let move_expand_order=[0,1,2,3,4,5,6,7,8]; //Naive (linear) ordering
+let move_expand_order = [0, 1, 2, 3, 4, 5, 6, 7, 8]; //Naive (linear) ordering
 //let move_expand_order=[4,0,1,2,3,5,6,7,8]; //Better ordering?
 
 /////////////////////////////////////////////////////////////////////////////
 
-function tictactoe_minimax(board,cpu_player,cur_player) {
+function tictactoe_minimax(board, cpu_player, cur_player) {
   /***********************************************************
   * board: game state, an array representing a tic-tac-toe board
   * The positions correspond as follows
@@ -32,25 +32,26 @@ function tictactoe_minimax(board,cpu_player,cur_player) {
   ***********************************************************/
 
   //BASE CASE
-  if(is_terminal(board)) //Stop if game is over
+  if (is_terminal(board)) //Stop if game is over
     return {
-      move:null,
-      score:utility(board,cpu_player) //How good was this result for us?
+      move: null,
+      score: utility(board, cpu_player) //How good was this result for us?
     }
 
   ++helper_expand_state_count; //DO NOT REMOVE
   //GENERATE SUCCESSORS
-  for(let move of move_expand_order) { //For each possible move (i.e., action)
-    if(board[move]!=-1) continue; //Already taken, can't move here (i.e., successor not valid)
-    
-    let new_board=board.slice(0); //Copy
-    new_board[move]=cur_player; //Apply move
+  for (let move of move_expand_order) { //For each possible move (i.e., action)
+    if (board[move] != -1) continue; //Already taken, can't move here (i.e., successor not valid)
+
+    let new_board = board.slice(0); //Copy
+    new_board[move] = cur_player; //Apply move
     //Successor state: new_board
 
     //RECURSION
     // What will my opponent do if I make this move?
-    let results=tictactoe_minimax(new_board,cpu_player,1-cur_player);
-
+    let results = tictactoe_minimax(new_board, cpu_player, 1 - cur_player);
+    
+    
     //MINIMAX
     /***********************
     * TASK: Implement minimax here. (What do you do with results.move and results.score ?)
@@ -64,23 +65,96 @@ function tictactoe_minimax(board,cpu_player,cur_player) {
   //Return results gathered from all sucessors (moves).
   //Which was the "best" move?  
   return {
-    move: /* What do you return here? */,
-    score: /* And here? */
+    // move: /* What do you return here? */,
+    // score: /* And here? */
   };
 }
 
 function is_terminal(board) {
   ++helper_eval_state_count; //DO NOT REMOVE
-  
+
   /*************************
   * TASK: Implement the terminal test
   * Return true if the game is finished (i.e, a draw or someone has won)
   * Return false if the game is incomplete
   *************************/
+  //check the two conditions of same value in diagonals
+  var check_same_diag1 = (board[0] == board[4] == board[8]);
+  var check_same_diag2 = (board[2] == board[4] == board[6]);
+  if (!board.includes(-1) || check_same_diag1 || check_same_diag2) {
+    return true;
+  }
+  for (var i = 0; i < 3; i++) {
+    //check the values in the same row and the same column
+    check_same_row = (board[3 * i + 0] == board[3 * i + 1] == board[3 * i + 2]);
+    check_same_col = (board[3 * 0 + i] == board[3 * 1 + i] == board[3 * 2 + i]);
+
+    if (check_same_col || check_same_row) {
+      return true;
+    }
+  }
+
   return false;
 }
 
-function utility(board,player) {//should consider the player,separate from Max and Min
+function utility(board, player) {//should consider the player,separate from Max and Min
+  if (!is_terminal(board)) {
+    return null;
+  }
+  var tie = true;
+  var winner = -1; //winner can only be 0 or 1, if winner ==-1, there is a draw
+  //check the two conditions of same value in diagonals
+  var check_same_diag1 = (board[0] == board[4] && board[4] == board[8]);
+  var check_same_diag2 = (board[2] == board[4] && board[4] === board[6]);
+  if (check_same_diag1 || check_same_diag2) {
+    tie = false;
+    if (board[4] == 0) {
+      winner = 0;
+    }
+    else if (board[4] == 1) {
+      winner = 1;
+    }
+  } else {
+    for (var i = 0; i < 3; i++) {
+      //check the values in the same row and the same column
+      check_same_row = (board[3 * i + 0] == board[3 * i + 1] && board[3 * i + 1] == board[3 * i + 2]);
+      check_same_col = (board[3 * 0 + i] == board[3 * 1 + i] && board[3 * 1 + i] == board[3 * 2 + i]);
+
+      if (check_same_row) {
+        tie = false;
+        if (board[3 * i + 0] == 0)  {
+          winner = 0;
+        } else if (board[3 * i + 0] == 1 ) {
+          winner = 1;
+        }
+        break;
+      }
+      if (check_same_col) {
+        tie = false;
+        if ( board[3 * 0 + i] == 0) {
+          winner = 0;
+        } else if ( board[3 * 0 + i] == 1) {
+          winner = 1;
+        }
+        break;
+      }
+    }
+  }
+
+  var count_blank = 0;
+  for (var i = 0; i < board.length; ++i) {
+    if (board[i] == -1)
+      count_blank++;
+  }
+  count = 9 - count_blank
+  if (tie) {//there is no winner, meaning the result is tie
+    return 0;
+  }
+  else if (winner == player) {//if the player is winner,return positive
+    return 10 - count;
+  } else {
+    return -(10 - count);////if the player is not winner,return negative.
+  }
   /***********************
   * TASK: Implement the utility function
   *
@@ -102,7 +176,7 @@ function utility(board,player) {//should consider the player,separate from Max a
   ***********************/
 }
 
-function tictactoe_minimax_alphabeta(board,cpu_player,cur_player,alpha,beta) {
+function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta) {
   /***********************
   * TASK: Implement Alpha-Beta Pruning
   *
@@ -113,7 +187,7 @@ function tictactoe_minimax_alphabeta(board,cpu_player,cur_player,alpha,beta) {
   ***********************/
 }
 
-function debug(board,human_player) {
+function debug(board, human_player) {
   /***********************
   * This function is run whenever you click the "Run debug function" button.
   *
@@ -124,10 +198,10 @@ function debug(board,human_player) {
   ***********************/
   helper_log_write("Testing board:");
   helper_log_board(board);
-  
-  let tm=is_terminal(board);
-  helper_log_write("is_terminal() returns "+(tm?"true":"false"));
 
-  let u=utility(board,human_player);
-  helper_log_write("utility() returns "+u+" (w.r.t. human player selection)");
+  let tm = is_terminal(board);
+  helper_log_write("is_terminal() returns " + (tm ? "true" : "false"));
+
+  let u = utility(board, human_player);
+  helper_log_write("utility() returns " + u + " (w.r.t. human player selection)");
 }
