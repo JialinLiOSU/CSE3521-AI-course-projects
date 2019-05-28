@@ -266,22 +266,23 @@ function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta)
     * Hint: Make sure you update the recursive function call to call this function! Should change the recursive function
     ***********************/
   }
+}
 
-  function debug(board, human_player) {
-    /***********************
-    * This function is run whenever you click the "Run debug function" button.
-    *
-    * You may use this function to run any code you need for debugging.
-    * The current "initial board" and "human player" settings are passed as arguments.
-    *
-    * (For the purposes of grading, this function will be ignored.)
-    ***********************/
-    helper_log_write("Testing board:");
-    helper_log_board(board);
+function debug(board, human_player) {
+  /***********************
+  * This function is run whenever you click the "Run debug function" button.
+  *
+  * You may use this function to run any code you need for debugging.
+  * The current "initial board" and "human player" settings are passed as arguments.
+  *
+  * (For the purposes of grading, this function will be ignored.)
+  ***********************/
+  helper_log_write("Testing board:");
+  helper_log_board(board);
 
-    let tm = is_terminal(board);
-    helper_log_write("is_terminal() returns " + (tm ? "true" : "false"));
+  let tm = is_terminal(board);
+  helper_log_write("is_terminal() returns " + (tm ? "true" : "false"));
 
-    let u = utility(board, human_player);
-    helper_log_write("utility() returns " + u + " (w.r.t. human player selection)");
-  }
+  let u = utility(board, human_player);
+  helper_log_write("utility() returns " + u + " (w.r.t. human player selection)");
+}
