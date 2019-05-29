@@ -81,24 +81,11 @@ function tictactoe_minimax(board, cpu_player, cur_player) {
         move_temp = move;
       }
     }
-
-
-    //MINIMAX
-    /***********************
-    * TASK: Implement minimax here. (What do you do with results.move and results.score ?)
-    * 
-    * Hint: You will need a little code outside the loop as well, but the main work goes here.
-    *
-    * Hint: Should you find yourself in need of a very large number, try Infinity or -Infinity
-    ***********************/
+    return {
+      move: move_temp/* What do you return here? */,
+      score: best_score/* And here? */
+    };
   }
-
-  //Return results gathered from all sucessors (moves).
-  //Which was the "best" move?  
-  return {
-    move: move_temp/* What do you return here? */,
-    score: best_score/* And here? */
-  };
 }
 
 function is_terminal(board) {
@@ -208,6 +195,7 @@ function utility(board, player) {//should consider the player,separate from Max 
 }
 
 function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta) {
+  //alpha 
   if (is_terminal(board)) //Stop if game is over
     return {
       move: null,
@@ -216,10 +204,11 @@ function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta)
 
   ++helper_expand_state_count; //DO NOT REMOVE
 
-  var best_score, move_temp; // The highest score now
-
-  if (cur_player != cpu_player) {
-    best_score = Infinity;
+  var hi_score, lo_score, move_temp; // The highest score for cpu and lowest score for human
+  hi_score = alpha;
+  lo_score = beta;
+  if (cur_player != cpu_player) {//Min's turn
+    // lo_score = Infinity;
     //GENERATE SUCCESSORS
     for (let move of move_expand_order) { //For each possible move (i.e., action)
       if (board[move] != -1) continue; //Already taken, can't move here (i.e., successor not valid)
@@ -230,16 +219,29 @@ function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta)
 
       //RECURSION
       // What will my opponent do if I make this move?
-      let results = tictactoe_minimax_alphabeta(new_board, cpu_player, 1 - cur_player);
-
-      if (results.score < best_score) {
-        best_score = results.score;
+      let results = tictactoe_minimax_alphabeta(new_board, cpu_player, 1 - cur_player, alpha, beta);
+      // alpha = results.alpha;
+      // beta = results.beta;
+      if (results.score < lo_score) {
+        lo_score = results.score;
         move_temp = move;
       }
-
+      beta = Math.min(lo_score, beta);
+      if (beta < alpha) {
+        return {
+          move: move_temp,
+          score: hi_score
+        }
+      }
     }
-  } else {
-    best_score = -Infinity;
+    return {
+      move: move_temp/* What do you return here? */,
+      score: lo_score/* And here? *///,
+      // alpha: alpha,
+      // beta: beta
+    };
+  } else { //Max's turn
+    // hi_score = -Infinity;
     //GENERATE SUCCESSORS
     for (let move of move_expand_order) { //For each possible move (i.e., action)
       if (board[move] != -1) continue; //Already taken, can't move here (i.e., successor not valid)
@@ -250,21 +252,37 @@ function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta)
 
       //RECURSION
       // What will my opponent do if I make this move?
-      let results = tictactoe_minimax(new_board, cpu_player, 1 - cur_player);
-
-      if (results.score > best_score) {
-        best_score = results.score;
+      let results = tictactoe_minimax_alphabeta(new_board, cpu_player, 1 - cur_player, alpha, beta);
+      // alpha = results.alpha;
+      // beta = results.beta;
+      if (results.score > hi_score) {
+        hi_score = results.score;
         move_temp = move;
       }
+      alpha = Math.max(hi_score, alpha);
+      if (beta < alpha) {
+        return {
+          move: move_temp,
+          score: hi_score
+        }
+      }
+      return {
+        move: move_temp/* What do you return here? */,
+        score: hi_score/* And here? *///,
+        //   alpha: alpha,
+        //   beta: beta
+        // };
+      }
+      /***********************
+      * TASK: Implement Alpha-Beta Pruning
+      *
+      * Once you are confident in your minimax implementation, copy it here
+      * and add alpha-beta pruning. (What do you do with the new alpha and beta parameters/variables?)
+      *
+      * Hint: Make sure you update the recursive function call to call this function! Should change the recursive function
+      ***********************/
+
     }
-    /***********************
-    * TASK: Implement Alpha-Beta Pruning
-    *
-    * Once you are confident in your minimax implementation, copy it here
-    * and add alpha-beta pruning. (What do you do with the new alpha and beta parameters/variables?)
-    *
-    * Hint: Make sure you update the recursive function call to call this function! Should change the recursive function
-    ***********************/
   }
 }
 
