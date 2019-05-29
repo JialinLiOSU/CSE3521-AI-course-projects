@@ -81,11 +81,11 @@ function tictactoe_minimax(board, cpu_player, cur_player) {
         move_temp = move;
       }
     }
-    return {
-      move: move_temp/* What do you return here? */,
-      score: best_score/* And here? */
-    };
   }
+  return {
+    move: move_temp/* What do you return here? */,
+    score: best_score/* And here? */
+  };
 }
 
 function is_terminal(board) {
@@ -204,11 +204,12 @@ function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta)
 
   ++helper_expand_state_count; //DO NOT REMOVE
 
-  var hi_score, lo_score, move_temp; // The highest score for cpu and lowest score for human
-  hi_score = alpha;
-  lo_score = beta;
+  var best_score, move_temp; // The highest score for cpu and lowest score for human
+  // hi_score = -Infinity;
+  // lo_score = Infinity;
   if (cur_player != cpu_player) {//Min's turn
     // lo_score = Infinity;
+    best_score = Infinity;
     //GENERATE SUCCESSORS
     for (let move of move_expand_order) { //For each possible move (i.e., action)
       if (board[move] != -1) continue; //Already taken, can't move here (i.e., successor not valid)
@@ -222,27 +223,23 @@ function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta)
       let results = tictactoe_minimax_alphabeta(new_board, cpu_player, 1 - cur_player, alpha, beta);
       // alpha = results.alpha;
       // beta = results.beta;
-      if (results.score < lo_score) {
-        lo_score = results.score;
+      if (results.score < best_score) {
+        best_score = results.score;
         move_temp = move;
       }
-      beta = Math.min(lo_score, beta);
+      beta = Math.min(best_score, beta);
       if (beta < alpha) {
         return {
           move: move_temp,
-          score: hi_score
+          score: best_score
         }
       }
     }
-    return {
-      move: move_temp/* What do you return here? */,
-      score: lo_score/* And here? *///,
-      // alpha: alpha,
-      // beta: beta
-    };
+
   } else { //Max's turn
     // hi_score = -Infinity;
     //GENERATE SUCCESSORS
+    best_score = -Infinity;
     for (let move of move_expand_order) { //For each possible move (i.e., action)
       if (board[move] != -1) continue; //Already taken, can't move here (i.e., successor not valid)
 
@@ -255,24 +252,18 @@ function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta)
       let results = tictactoe_minimax_alphabeta(new_board, cpu_player, 1 - cur_player, alpha, beta);
       // alpha = results.alpha;
       // beta = results.beta;
-      if (results.score > hi_score) {
-        hi_score = results.score;
+      if (results.score > best_score) {
+        best_score = results.score;
         move_temp = move;
       }
-      alpha = Math.max(hi_score, alpha);
+      alpha = Math.max(best_score, alpha);
       if (beta < alpha) {
         return {
           move: move_temp,
-          score: hi_score
+          score: best_score
         }
       }
-      return {
-        move: move_temp/* What do you return here? */,
-        score: hi_score/* And here? *///,
-        //   alpha: alpha,
-        //   beta: beta
-        // };
-      }
+
       /***********************
       * TASK: Implement Alpha-Beta Pruning
       *
@@ -284,6 +275,10 @@ function tictactoe_minimax_alphabeta(board, cpu_player, cur_player, alpha, beta)
 
     }
   }
+  return {
+    move: move_temp/* What do you return here? */,
+    score: best_score/* And here? */
+  };
 }
 
 function debug(board, human_player) {
