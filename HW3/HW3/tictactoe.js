@@ -1,7 +1,8 @@
 //Define the order in which to examine/expand possible moves
 //(This affects alpha-beta pruning performance)
 // let move_expand_order = [0, 1, 2, 3, 4, 5, 6, 7, 8]; //Naive (linear) ordering
-let move_expand_order=[4,0,2,6,8,1,3,5,7]; //Better ordering?
+// let move_expand_order=[4,0,1,2,3,5,6,7,8]; //Better ordering?
+let move_expand_order=[4,0,2,6,8,1,3,5,7];
 
 /////////////////////////////////////////////////////////////////////////////
 
