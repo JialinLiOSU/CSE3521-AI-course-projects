@@ -1,0 +1,113 @@
+<html>
+<head>
+<meta name="description" content="CSE 3521 - Parameter Estimation">
+<meta name="copyright" content="&copy; 2017 Joe Barker, Computer Science and Engineering, Ohio State University">
+</head>
+<title>CSE 3521 - Parameter Estimation</title>
+
+<!-- http://www.flotcharts.org/ -->
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/eligrey/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+<!-- http://www.numericjs.com/ -->
+<!-- <script type="text/javascript" src="http://www.numericjs.com/lib/numeric-1.2.6.min.js"></script> -->
+<script type="text/javascript" src="numericjs.com/numeric-1.2.6.min.js"></script> -->
+<script type="text/javascript">
+(function() {
+//The numeric library can be inconsistent in the way it returns vectors, which can confuse students unnecessarily
+//So we'll patch some of it's functions to be more predictable
+function squeeze_to_vector(x) {
+  let d=numeric.dim(x);
+  if(d.length!=2)
+    return x; //Already a vector (or tensor>2)
+
+  if(d[0]==1)
+    return x[0];
+  if(d[1]==1)
+	return x.map(e => e[0]);
+  return x; //Must be a matrix
+}
+
+//Patch functions students are likely to use
+var numeric_add=numeric.add;
+numeric.add = function(a,b) { return squeeze_to_vector(numeric_add(squeeze_to_vector(a),squeeze_to_vector(b))); }
+var numeric_mul=numeric.mul;
+numeric.mul = function(a,b) { return squeeze_to_vector(numeric_mul(squeeze_to_vector(a),squeeze_to_vector(b))); }
+var numeric_dot=numeric.dot;
+numeric.dot = function(a,b) { return squeeze_to_vector(numeric_dot(squeeze_to_vector(a),squeeze_to_vector(b))); }
+var numeric_transpose=numeric.transpose;
+numeric.transpose = function(a) { return squeeze_to_vector(numeric_transpose(squeeze_to_vector(a))); }
+var numeric_solve=numeric.solve;
+numeric.solve = function(a,b) { return squeeze_to_vector(numeric_solve(squeeze_to_vector(a),squeeze_to_vector(b))); }
+var numeric_inv=numeric.inv;
+numeric.inv = function(a) { return squeeze_to_vector(numeric_inv(squeeze_to_vector(a))); }
+var numeric_prettyPrint=numeric.prettyPrint;
+numeric.prettyPrint = function(a) { return numeric_prettyPrint(squeeze_to_vector(a)); }
+
+})();
+</script>
+
+<script type="text/javascript" src="param_est_helper.js"></script>
+<script type="text/javascript" src="param_est.js"></script>
+
+<body onload="setup();">
+<!--<h1 align=center>CSE 3521 - Parameter Estimation</h1>-->
+
+<div id="left" style="float: left; position:fixed; width:65%; height:100%; top:0; bottom:0; left:0">
+	<table style="width:100%;height:100%">
+		<tr><td id="webgl-resizer" style="height:99%">
+			<div id="plot-placeholder" style="width:100%;height:100%"></div>
+		</td></tr><tr><td>
+			<button onclick="savePlot()">Save As Img</button>
+<!--
+			<button onclick="startEnterData()">Enter Data</button>
+			<button onclick="stopEnterData()" style="display:none">Done</button>
+			<button onclick="loadData()">Load Data</button>
+-->
+		</td></tr>
+	</table>
+</div>
+<div id="right" style="float: right; width:35%; height:100%; top:0; bottom:0; right:0; overflow:auto">
+	Function type:
+	<input type="radio" name="input_func" value="line" id="input_func_line" onclick="update_func(this);" checked="checked">Line
+	<input type="radio" name="input_func" value="poly" id="input_func_poly" onclick="update_func(this);">Polynomial
+	<input type="radio" name="input_func" value="nonlin" id="input_func_nonlin" onclick="update_func(this);">Non-linear
+	<br><br>
+	<div id="mode_line">
+		Function: y = a*x + b
+		<br>a&nbsp;<input type="text" id="input_line_a" value="1" onchange="replot()">
+		<br>b&nbsp;<input type="text" id="input_line_b" value="0" onchange="replot()">
+		<br><br><button onclick="do_lsq_line()">Fit From Data</button>
+	</div>
+	<div id="mode_poly" style="display:none">
+		Order: <input type="number" id="input_poly_order" min="0" step="1" max="4" value="4" onchange="update_poly_order()">
+		<br>Function: <span id="ui_poly_func">y = a*x<sup>4</sup> + b*x<sup>3</sup> + c*x<sup>2</sup> + d*x + e</span>
+		<div id="ui_poly_a">a&nbsp;<input type="text" id="input_poly_a" value="1" onchange="replot()"></div>
+		<div id="ui_poly_b">b&nbsp;<input type="text" id="input_poly_b" value="0" onchange="replot()"></div>
+		<div id="ui_poly_c">c&nbsp;<input type="text" id="input_poly_c" value="0" onchange="replot()"></div>
+		<div id="ui_poly_d">d&nbsp;<input type="text" id="input_poly_d" value="0" onchange="replot()"></div>
+		<div id="ui_poly_e">e&nbsp;<input type="text" id="input_poly_e" value="0" onchange="replot()"></div>
+		<br><br><button onclick="do_lsq_poly()">Fit From Data</button>
+	</div>
+	<div id="mode_nonlin" style="display:none">
+		Function: y = a*x<sup>b</sup> + c*x + d
+		<br>a&nbsp;<input type="text" id="input_nonlin_a" value="0.5" onchange="replot()">
+		<br>b&nbsp;<input type="text" id="input_nonlin_b" value="2" onchange="replot()">
+		<br>c&nbsp;<input type="text" id="input_nonlin_c" value="0.5" onchange="replot()">
+		<br>d&nbsp;<input type="text" id="input_nonlin_d" value="0.5" onchange="replot()">
+		<br><br>Gauss-Newton:
+		<br><button onclick="do_lsq_nonlin_gn()">Fit From Data</button>&nbsp;&nbsp;Iterations&nbsp;<input style="width:60px" type="number" id="input_gn_iterations" min="0" step="1" value="10">
+		<button onclick="do_lsq_nonlin_gn_anim()">&#9654;</button>
+		<br><br>Gradient Descent:
+		<br><button onclick="do_lsq_nonlin_gd()">Fit From Data</button>&nbsp;&nbsp;Iterations&nbsp;<input style="width:60px" type="number" id="input_gd_iterations" min="0" step="1" value="5000">
+		<!--<button onclick="do_lsq_nonlin_gd_anim()">&#9654;</button>-->
+		<br>Learning&nbsp;rate&nbsp;<input type="text" id="input_gd_alpha" value="0.001">
+	</div>
+	
+	<!-- Logging area for outputting status and debug information -->
+	<hr>
+	<div id="log"></div>
+</div>
+
+</body>
+</html>
